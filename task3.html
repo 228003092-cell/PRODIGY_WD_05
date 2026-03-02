@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocialConnect</title>
+<style>
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f0f2f5;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Left Sidebar */
+.sidebar {
+    width: 20%;
+    background: white;
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.sidebar h2 {
+    color: #1877f2;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.sidebar .active {
+    font-weight: bold;
+}
+
+.create-btn {
+    margin-top: 20px;
+    padding: 10px;
+    background: #1877f2;
+    color: white;
+    border: none;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Feed */
+.feed {
+    width: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.create-post {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.create-post input,
+.create-post textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.create-post button {
+    background: #1877f2;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.post {
+    background: white;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.post-image {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.post-actions button {
+    margin-right: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #1877f2;
+}
+
+.comments p {
+    margin: 5px 0;
+}
+
+/* Right Sidebar */
+.rightbar {
+    width: 30%;
+    background: white;
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.follow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.follow button {
+    background: #1877f2;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.follow button.following {
+    background: #42b72a;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <h2>SocialConnect</h2>
+        <ul>
+            <li class="active">Home</li>
+            <li>Explore</li>
+            <li>Alerts</li>
+            <li>Profile</li>
+        </ul>
+        <button class="create-btn">Create Post</button>
+    </div>
+
+    <!-- Main Feed -->
+    <div class="feed">
+
+        <div class="create-post">
+            <input type="text" id="username" placeholder="Your Name">
+            <textarea id="postInput" placeholder="What's on your mind?"></textarea>
+            <input type="file" id="imageInput" accept="image/*">
+            <button onclick="createPost()">Post</button>
+        </div>
+
+        <div id="posts"></div>
+
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="rightbar">
+        <h3>Who to Follow</h3>
+
+        <div class="follow">
+            John Doe 
+            <button>Follow</button>
+        </div>
+
+        <div class="follow">
+            Priya Sharma 
+            <button>Follow</button>
+        </div>
+
+        <div class="follow">
+            Arjun Mehta 
+            <button>Follow</button>
+        </div>
+
+        <h3>Trending Now</h3>
+        <p>#TechNews</p>
+        <p>#SocialMedia</p>
+        <p>#WebDesign</p>
+    </div>
+
+</div>
+
+<script>
+function createPost() {
+    const username = document.getElementById("username").value || "John Doe";
+    const text = document.getElementById("postInput").value;
+    const imageInput = document.getElementById("imageInput");
+    const posts = document.getElementById("posts");
+
+    if (text.trim() === "" && imageInput.files.length === 0) return;
+
+    const postDiv = document.createElement("div");
+    postDiv.className = "post";
+
+    // If image selected
+    if (imageInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            postDiv.innerHTML = `
+                <div class="post-header">
+                    <img src="https://i.pravatar.cc/150?img=3" class="profile-pic">
+                    <strong>${username}</strong>
+                </div>
+                <p>${text}</p>
+                <img src="${e.target.result}" class="post-image">
+                <div class="post-actions">
+                    <button onclick="likePost(this)">Like</button>
+                    <button onclick="commentPost(this)">Comment</button>
+                </div>
+                <div class="comments"></div>
+            `;
+            posts.prepend(postDiv);
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+    } else {
+        postDiv.innerHTML = `
+            <div class="post-header">
+                <img src="https://i.pravatar.cc/150?img=3" class="profile-pic">
+                <strong>${username}</strong>
+            </div>
+            <p>${text}</p>
+            <div class="post-actions">
+                <button onclick="likePost(this)">Like</button>
+                <button onclick="commentPost(this)">Comment</button>
+            </div>
+            <div class="comments"></div>
+        `;
+        posts.prepend(postDiv);
+    }
+
+    document.getElementById("postInput").value = "";
+    imageInput.value = "";
+}
+
+function likePost(btn) {
+    if(btn.innerText === "Like"){
+        btn.innerText = "Liked ❤️";
+    } else {
+        btn.innerText = "Like";
+    }
+}
+
+function commentPost(btn) {
+    const comment = prompt("Enter your comment:");
+    if (!comment) return;
+
+    const commentsDiv = btn.parentElement.nextElementSibling;
+    const newComment = document.createElement("p");
+    newComment.innerText = "You: " + comment;
+    commentsDiv.appendChild(newComment);
+}
+
+/* Follow Toggle */
+document.querySelectorAll(".follow button").forEach(button => {
+    button.addEventListener("click", function () {
+        if (this.innerText === "Follow") {
+            this.innerText = "Following ✓";
+            this.classList.add("following");
+        } else {
+            this.innerText = "Follow";
+            this.classList.remove("following");
+        }
+    });
+});
+</script>
+</body>
+</html>
